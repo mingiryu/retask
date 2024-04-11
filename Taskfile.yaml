@@ -29,9 +29,17 @@ tasks:
       - ssh root@$SSH_IP_ADDRESS 'sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /bin'
       - scp -r Taskfile.yaml root@$SSH_IP_ADDRESS:/root/Taskfile.yaml
 
-  scp:aws:
+  ssh:aws:
     cmds:
+      - ssh root@$SSH_IP_ADDRESS 'apt update'
+      - ssh root@$SSH_IP_ADDRESS 'apt install awscli -y'
       - scp -r ~/.aws root@$SSH_IP_ADDRESS:/root/.aws
+
+  poetry:
+    cmds:
+      - curl -sSL https://install.python-poetry.org | python3 -
+      - echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+      - tmux
 
   jupyter:
     cmds:
