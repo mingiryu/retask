@@ -4,50 +4,39 @@ version: '3'
 
 vars:
   JUPYTER_ARGS: lab --ip 0.0.0.0 --allow-root
-  GIT_URI: git@github.com:mingiryu/retask.git
+  GIT_URI: git@github.com:opensyllabus/catalog-parser.git
 
 env:
-  SSH_IP_ADDRESS: "135.181.63.183"
+  SSH_IP_ADDRESS: "135.181.63.151"
   SSH_KEY_PATH: "../.ssh/id_rsa"
 
 tasks:
 
   ssh:
     cmds:
-      - ssh root@$SSH_IP_ADDRESS
-
-  ssh:add:
-    cmds:
       - ssh-add $SSH_KEY_PATH
-
-  ssh:github:
-    cmds:
-      - ssh root@$SSH_IP_ADDRESS "ssh-keyscan github.com >> ~/.ssh/known_hosts"
+      - ssh root@$SSH_IP_ADDRESS
 
   ssh:clone:
     cmds:
+      - scp -r $SSH_KEY_PATH root@$SSH_IP_ADDRESS:/root/.ssh/id_rsa
+      - scp -r ~/.gitconfig root@$SSH_IP_ADDRESS:/root/.gitconfig
+      - ssh root@$SSH_IP_ADDRESS "ssh-keyscan github.com >> ~/.ssh/known_hosts"
       - ssh root@$SSH_IP_ADDRESS "git clone {{.GIT_URI}}"
 
   ssh:task:
     cmds:
       - ssh root@$SSH_IP_ADDRESS 'sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /bin'
+      - scp -r Taskfile.yaml root@$SSH_IP_ADDRESS:/root/Taskfile.yaml
 
-  scp:ssh:
+  ssh:jupyter:
     cmds:
-      - scp -r $SSH_KEY_PATH root@$SSH_IP_ADDRESS:/root/.ssh/id_rsa
-
-  scp:git:
-    cmds:
-      - scp -r ~/.gitconfig root@$SSH_IP_ADDRESS:/root/.gitconfig
+      - ssh -L 8888:localhost:8888 root@SSH_IP_ADDRESS
 
   scp:aws:
     cmds:
       - scp -r ~/.aws root@$SSH_IP_ADDRESS:/root/.aws
 
-  scp:task:
-    cmds:
-      - scp -r Taskfile.yaml root@$SSH_IP_ADDRESS:/root/Taskfile.yaml
-      
   jupyter:
     cmds:
       - jupyter {{.JUPYTER_ARGS}}
