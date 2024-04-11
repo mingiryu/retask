@@ -7,7 +7,7 @@ vars:
   GIT_URI: git@github.com:opensyllabus/catalog-parser.git
 
 env:
-  SSH_IP_ADDRESS: "135.181.63.151"
+  SSH_IP_ADDRESS: "135.181.63.162"
   SSH_KEY_PATH: "../.ssh/id_rsa"
 
 tasks:
@@ -28,10 +28,6 @@ tasks:
     cmds:
       - ssh root@$SSH_IP_ADDRESS 'sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /bin'
       - scp -r Taskfile.yaml root@$SSH_IP_ADDRESS:/root/Taskfile.yaml
-
-  ssh:jupyter:
-    cmds:
-      - ssh -L 8888:localhost:8888 root@SSH_IP_ADDRESS
 
   scp:aws:
     cmds:
