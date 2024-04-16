@@ -8,7 +8,6 @@ vars:
 dotenv: [".env"]
 
 env:
-  SSH_IP_ADDRESS: "135.181.63.162"
   SSH_KEY_PATH: "../.ssh/id_rsa"
 
 tasks:
@@ -35,6 +34,10 @@ tasks:
       - ssh root@$SSH_IP_ADDRESS 'apt update'
       - ssh root@$SSH_IP_ADDRESS 'apt install awscli -y'
       - scp -r ~/.aws root@$SSH_IP_ADDRESS:/root/.aws
+
+  ssh:tunnel:
+    cmds:
+      - ssh -NL 8888:localhost:8888 root@$SSH_IP_ADDRESS
 
   poetry:
     cmds:
