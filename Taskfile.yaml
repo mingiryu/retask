@@ -15,29 +15,32 @@ tasks:
   ssh:
     cmds:
       - ssh-add $SSH_KEY_PATH
-      - ssh root@$SSH_IP_ADDRESS
+      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT
 
   ssh:clone:
     cmds:
-      - scp -r $SSH_KEY_PATH root@$SSH_IP_ADDRESS:/root/.ssh/id_rsa
-      - scp -r ~/.gitconfig root@$SSH_IP_ADDRESS:/root/.gitconfig
-      - ssh root@$SSH_IP_ADDRESS "ssh-keyscan github.com >> ~/.ssh/known_hosts"
-      - ssh root@$SSH_IP_ADDRESS "git clone $GIT_URI"
+      - scp -P $SSH_PORT -r $SSH_KEY_PATH root@$SSH_IP_ADDRESS:/root/.ssh/id_rsa
+      - scp -P $SSH_PORT -r ~/.gitconfig root@$SSH_IP_ADDRESS:/root/.gitconfig
+      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT "ssh-keyscan github.com >> ~/.ssh/known_hosts"
+      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT "git clone $GIT_URI"
 
   ssh:task:
     cmds:
-      - ssh root@$SSH_IP_ADDRESS 'sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /bin'
-      - scp -r Taskfile.yaml root@$SSH_IP_ADDRESS:/root/Taskfile.yaml
+      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /bin'
+      - scp -P $SSH_PORT -r Taskfile.yaml root@$SSH_IP_ADDRESS:/root/Taskfile.yaml
 
+  ssh:apt:
+    cmds:
+      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt update'
+      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt install awscli tmux nvtop -y'
+  
   ssh:aws:
     cmds:
-      - ssh root@$SSH_IP_ADDRESS 'apt update'
-      - ssh root@$SSH_IP_ADDRESS 'apt install awscli -y'
-      - scp -r ~/.aws root@$SSH_IP_ADDRESS:/root/.aws
+      - scp -P $SSH_PORT -r ~/.aws root@$SSH_IP_ADDRESS:/root/.aws
 
   ssh:tunnel:
     cmds:
-      - ssh -NL 8888:localhost:8888 root@$SSH_IP_ADDRESS
+      - ssh -NL 8888:localhost:8888 root@$SSH_IP_ADDRESS -p $SSH_PORT
 
   poetry:
     cmds:
