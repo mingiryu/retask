@@ -32,10 +32,12 @@ tasks:
   ssh:apt:
     cmds:
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt update'
-      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt install awscli tmux nvtop -y'
+      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt install tmux nvtop -y'
   
   ssh:aws:
     cmds:
+      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt update'
+      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt install awscli -y'
       - scp -P $SSH_PORT -r ~/.aws root@$SSH_IP_ADDRESS:/root/.aws
 
   ssh:tunnel:
