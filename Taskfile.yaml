@@ -6,6 +6,7 @@ dotenv: [".env"]
 
 env:
   SSH_KEY_PATH: "../.ssh/id_rsa"
+  DEFAULT_TASK_FILE: "taskfiles/Python.yaml"
 
 tasks:
 
@@ -24,7 +25,7 @@ tasks:
   taskfile:
     cmds:
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /bin'
-      - scp -P $SSH_PORT -r taskfiles/Taskfile.yaml root@$SSH_IP_ADDRESS:/root/Taskfile.yaml
+      - scp -P $SSH_PORT -r $DEFAULT_TASK_FILE root@$SSH_IP_ADDRESS:/root/Taskfile.yaml
 
   apt:
     cmds:
@@ -35,7 +36,7 @@ tasks:
     cmds:
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt update'
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt install awscli -y'
-      - task: ssh:aws:config
+      - task: aws:config
   
   aws:config:
     cmds:
