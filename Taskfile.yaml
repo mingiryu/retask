@@ -2,9 +2,6 @@
 
 version: '3'
 
-vars:
-  JUPYTER_ARGS: lab --ip 0.0.0.0 --allow-root
-
 dotenv: [".env"]
 
 env:
@@ -17,39 +14,33 @@ tasks:
       - ssh-add $SSH_KEY_PATH
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT
 
-  ssh:clone:
+  clone:
     cmds:
       - scp -P $SSH_PORT -r $SSH_KEY_PATH root@$SSH_IP_ADDRESS:/root/.ssh/id_rsa
       - scp -P $SSH_PORT -r ~/.gitconfig root@$SSH_IP_ADDRESS:/root/.gitconfig
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT "ssh-keyscan github.com >> ~/.ssh/known_hosts"
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT "git clone $GIT_URI"
 
-  ssh:task:
+  taskfile:
     cmds:
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /bin'
-      - scp -P $SSH_PORT -r Taskfile.yaml root@$SSH_IP_ADDRESS:/root/Taskfile.yaml
+      - scp -P $SSH_PORT -r taskfiles/Taskfile.yaml root@$SSH_IP_ADDRESS:/root/Taskfile.yaml
 
-  ssh:apt:
+  apt:
     cmds:
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt update'
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt install tmux nvtop -y'
   
-  ssh:aws:
+  aws:
     cmds:
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt update'
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt install awscli -y'
+      - task: ssh:aws:config
+  
+  aws:config:
+    cmds:
       - scp -P $SSH_PORT -r ~/.aws root@$SSH_IP_ADDRESS:/root/.aws
 
-  ssh:tunnel:
+  tunnel:
     cmds:
       - ssh -NL 8888:localhost:8888 root@$SSH_IP_ADDRESS -p $SSH_PORT
-
-  poetry:
-    cmds:
-      - curl -sSL https://install.python-poetry.org | python3 -
-      - echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-      - tmux
-
-  jupyter:
-    cmds:
-      - jupyter {{.JUPYTER_ARGS}}
