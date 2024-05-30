@@ -8,11 +8,13 @@ vars:
 tasks:
 
   poetry:
+    desc: Install Poetry and start a tmux session
     cmds:
       - curl -sSL https://install.python-poetry.org | python3 -
       - echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
       - tmux
 
   jupyter:
+    desc: Start Jupyter Lab
     cmds:
       - jupyter {{.JUPYTER_ARGS}}
