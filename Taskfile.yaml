@@ -10,6 +10,8 @@ env:
 
 tasks:
 
+  env: cp .env.dist .env
+
   ssh:
     cmds:
       - ssh-add $SSH_KEY_PATH
