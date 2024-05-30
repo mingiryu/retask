@@ -10,14 +10,18 @@ env:
 
 tasks:
 
-  env: cp .env.dist .env
+  env: 
+    desc: Copy the dot env file
+    cmd: cp .env.dist .env
 
   ssh:
+    desc: SSH into the remote instance
     cmds:
       - ssh-add $SSH_KEY_PATH
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT
 
   clone:
+    desc: Configure git and clone the repo
     cmds:
       - scp -P $SSH_PORT -r $SSH_KEY_PATH root@$SSH_IP_ADDRESS:/root/.ssh/id_rsa
       - scp -P $SSH_PORT -r ~/.gitconfig root@$SSH_IP_ADDRESS:/root/.gitconfig
@@ -25,25 +29,30 @@ tasks:
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT "git clone $GIT_URI"
 
   taskfile:
+    desc: Install TaskFile and copy over the file
     cmds:
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /bin'
       - scp -P $SSH_PORT -r $DEFAULT_TASK_FILE root@$SSH_IP_ADDRESS:/root/Taskfile.yaml
 
   apt:
+    desc: Update apt and install tools
     cmds:
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt update'
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt install tmux nvtop -y'
   
   aws:
+    desc: Install AWS CLI and configure
     cmds:
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt update'
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt install awscli -y'
       - task: aws:config
   
   aws:config:
+    desc: Copy over AWS CLI configuration
     cmds:
       - scp -P $SSH_PORT -r ~/.aws root@$SSH_IP_ADDRESS:/root/.aws
 
   tunnel:
+    desc: Start a SSH tunnel
     cmds:
       - ssh -NL 8888:localhost:8888 root@$SSH_IP_ADDRESS -p $SSH_PORT
