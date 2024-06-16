@@ -20,6 +20,11 @@ tasks:
       - ssh-add $SSH_KEY_PATH
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT
 
+  scp:
+    desc: Copy a file into the remote instance
+    cmds:
+      - scp -P $SSH_PORT -r {{.CLI_ARGS}} root@$SSH_IP_ADDRESS:/root/
+
   clone:
     desc: Configure git and clone the repo
     cmds:
