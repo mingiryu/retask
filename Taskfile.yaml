@@ -25,6 +25,11 @@ tasks:
     cmds:
       - scp -P $SSH_PORT -r {{.CLI_ARGS}} root@$SSH_IP_ADDRESS:/root/
 
+  scp:down:
+    desc: Copy a file from the remote instance
+    cmds:
+      - scp -P $SSH_PORT -r root@$SSH_IP_ADDRESS:/root/{{.CLI_ARGS}} .
+
   clone:
     desc: Configure git and clone the repo
     cmds:
