@@ -48,7 +48,7 @@ tasks:
     desc: Update apt and install tools
     cmds:
       - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt update'
-      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt install tmux nvtop -y'
+      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt install tmux nvtop unzip -y'
   
   aws:
     desc: Install AWS CLI and configure
