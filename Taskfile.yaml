@@ -11,7 +11,7 @@ env:
 tasks:
 
   env: 
-    desc: Copy the dot env file
+    desc: Copy env.dist to .env
     cmd: cp .env.dist .env
 
   ssh:
@@ -28,7 +28,7 @@ tasks:
   scp:down:
     desc: Copy a file from the remote instance
     cmds:
-      - scp -P $SSH_PORT -r root@$SSH_IP_ADDRESS:/root/{{.CLI_ARGS}} .
+      - scp -P $SSH_PORT -r root@$SSH_IP_ADDRESS:/{{.CLI_ARGS}} .
 
   clone:
     desc: Configure git and clone the repo
