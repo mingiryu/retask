@@ -65,4 +65,4 @@ tasks:
   tunnel:
     desc: Start a SSH tunnel
     cmds:
-      - ssh -NL 8888:localhost:8888 root@$SSH_IP_ADDRESS -p $SSH_PORT
+      - ssh -NL $SSH_TUNNEL_PORT:localhost:$SSH_TUNNEL_PORT root@$SSH_IP_ADDRESS -p $SSH_PORT
