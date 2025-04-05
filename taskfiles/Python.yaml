@@ -10,7 +10,7 @@ tasks:
   poetry:
     desc: Install Poetry and start a tmux session
     cmds:
-      - curl -sSL https://install.python-poetry.org | python3 -
+      - curl -sSL https://install.python-poetry.org | POETRY_VERSION=1.8.5 python3 -
       - echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
       - tmux
 
