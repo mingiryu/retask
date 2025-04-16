@@ -1,0 +1,31 @@
+# https://taskfile.dev
+# Used for setting up Amazon Linux
+
+version: "3"
+
+tasks:
+  docker:
+    desc: Install Docker
+    cmds:
+      - sudo yum install -y docker
+      - sudo service docker start
+      - sudo groupadd docker
+      - sudo usermod -aG docker $USER
+      - newgrp docker
+
+  mount:
+    desc: |
+      Mount a NVME disk
+      Example: mount DISK=nvme1n1 TAG=data
+    vars:
+      DISK: '{{.DISK| default "nvme1n1"}}'
+      TAG: '{{.TAG| default "data"}}'
+    cmds:
+      - sudo mkfs -t xfs /dev/{{.DISK}}
+      - sudo mkdir /{{.TAG}}
+      - sudo mount /dev/{{.DISK}} /{{.TAG}}
+
+  tools:
+    desc: Update and install tools
+    cmds:
+      - sudo yum install -y git vim htop tmux iotop
