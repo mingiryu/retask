@@ -1,68 +1,66 @@
 # https://taskfile.dev
 
-version: '3'
+version: "3"
 
 dotenv: [".env"]
 
-env:
-  SSH_KEY_PATH: "../.ssh/id_rsa"
-  DEFAULT_TASK_FILE: "taskfiles/Python.yaml"
-
 tasks:
-
-  env: 
-    desc: Copy env.dist to .env
-    cmd: cp .env.dist .env
-
   ssh:
     desc: SSH into the remote instance
     cmds:
-      - ssh-add $SSH_KEY_PATH
-      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT
+      - ssh-add $REMOTE_SSH_KEY
+      - ssh $REMOTE_ROOT@$SSH_IP_ADDRESS -p $SSH_PORT
 
   scp:
     desc: Copy a file into the remote instance
     cmds:
-      - scp -P $SSH_PORT -r {{.CLI_ARGS}} root@$SSH_IP_ADDRESS:/root/
+      - scp -P $SSH_PORT -r {{.CLI_ARGS}} $REMOTE_ROOT@$SSH_IP_ADDRESS:$REMOTE_HOME/
 
   scp:down:
-    desc: Copy a file from the remote instance
+    desc: |
+      Copy a file from the remote instance
+      Example: scp:down -- file.txt
     cmds:
-      - scp -P $SSH_PORT -r root@$SSH_IP_ADDRESS:/{{.CLI_ARGS}} .
+      - scp -P $SSH_PORT -r $REMOTE_ROOT@$SSH_IP_ADDRESS:/{{.CLI_ARGS}} .
 
   clone:
     desc: Configure git and clone the repo
     cmds:
-      - scp -P $SSH_PORT -r $SSH_KEY_PATH root@$SSH_IP_ADDRESS:/root/.ssh/id_rsa
-      - scp -P $SSH_PORT -r ~/.gitconfig root@$SSH_IP_ADDRESS:/root/.gitconfig
-      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT "ssh-keyscan github.com >> ~/.ssh/known_hosts"
-      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT "git clone $GIT_URI"
+      - scp -P $SSH_PORT -r $GIT_SSH_KEY $REMOTE_ROOT@$SSH_IP_ADDRESS:$REMOTE_HOME/.ssh/id_rsa
+      - scp -P $SSH_PORT -r ~/.gitconfig $REMOTE_ROOT@$SSH_IP_ADDRESS:$REMOTE_HOME/.gitconfig
+      - ssh $REMOTE_ROOT@$SSH_IP_ADDRESS -p $SSH_PORT "ssh-keyscan github.com >> ~/.ssh/known_hosts"
+      - ssh $REMOTE_ROOT@$SSH_IP_ADDRESS -p $SSH_PORT "git clone $GIT_URI"
 
-  taskfile:
+  task:
     desc: Install TaskFile and copy over the file
     cmds:
-      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /bin'
-      - scp -P $SSH_PORT -r $DEFAULT_TASK_FILE root@$SSH_IP_ADDRESS:/root/Taskfile.yaml
+      - ssh $REMOTE_ROOT@$SSH_IP_ADDRESS -p $SSH_PORT 'sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b ~/.local/bin'
+      - task: task:file
+
+  task:file:
+    desc: Copy over the default Task file
+    cmds:
+      - scp -P $SSH_PORT -r $REMOTE_TASK_FILE $REMOTE_ROOT@$SSH_IP_ADDRESS:$REMOTE_HOME/Taskfile.yaml
 
   apt:
     desc: Update apt and install tools
     cmds:
-      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt update'
-      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt install tmux nvtop unzip -y'
-  
+      - ssh $REMOTE_ROOT@$SSH_IP_ADDRESS -p $SSH_PORT 'apt update'
+      - ssh $REMOTE_ROOT@$SSH_IP_ADDRESS -p $SSH_PORT 'apt install git tmux nvtop unzip -y'
+
   aws:
     desc: Install AWS CLI and configure
     cmds:
-      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt update'
-      - ssh root@$SSH_IP_ADDRESS -p $SSH_PORT 'apt install awscli -y'
+      - ssh $REMOTE_ROOT@$SSH_IP_ADDRESS -p $SSH_PORT 'apt update'
+      - ssh $REMOTE_ROOT@$SSH_IP_ADDRESS -p $SSH_PORT 'apt install awscli -y'
       - task: aws:config
-  
+
   aws:config:
     desc: Copy over AWS CLI configuration
     cmds:
-      - scp -P $SSH_PORT -r ~/.aws root@$SSH_IP_ADDRESS:/root/.aws
+      - scp -P $SSH_PORT -r ~/.aws $REMOTE_ROOT@$SSH_IP_ADDRESS:$REMOTE_HOME/.aws
 
   tunnel:
     desc: Start a SSH tunnel
     cmds:
-      - ssh -NL $SSH_TUNNEL_PORT:localhost:$SSH_TUNNEL_PORT root@$SSH_IP_ADDRESS -p $SSH_PORT
+      - ssh -NL $SSH_TUNNEL_PORT:localhost:$SSH_TUNNEL_PORT $REMOTE_ROOT@$SSH_IP_ADDRESS -p $SSH_PORT
