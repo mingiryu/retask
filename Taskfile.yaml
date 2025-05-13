@@ -34,7 +34,7 @@ tasks:
   task:
     desc: Install TaskFile and copy over the file
     cmds:
-      - ssh $REMOTE_ROOT@$SSH_IP_ADDRESS -p $SSH_PORT 'sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b ~/.local/bin'
+      - ssh $REMOTE_ROOT@$SSH_IP_ADDRESS -p $SSH_PORT 'sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin'
       - task: task:file
 
   task:file:
