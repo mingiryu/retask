@@ -20,8 +20,12 @@ tasks:
   ssh:
     desc: SSH into the remote instance
     cmds:
-      - ssh-add $REMOTE_SSH_KEY
       - "{{.SSH}}"
+
+  ssh:add:
+    desc: Add the remote SSH key to the agent
+    cmds:
+      - ssh-add $REMOTE_SSH_KEY
 
   scp:
     desc: Copy a file into the remote instance
