@@ -8,10 +8,10 @@ tasks:
   setup:
     desc: Run common tasks for setting up an instance
     cmds:
+      - task: apt
       - task: clone
       - task: aws
       - task: task
-      - task: apt
 
   ssh:
     desc: SSH into the remote instance
