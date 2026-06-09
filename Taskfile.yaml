@@ -60,7 +60,7 @@ tasks:
     desc: Install AWS CLI and configure
     cmds:
       - ssh $REMOTE_ROOT@$SSH_IP_ADDRESS -p $SSH_PORT 'apt update'
-      - ssh $REMOTE_ROOT@$SSH_IP_ADDRESS -p $SSH_PORT 'apt install awscli -y'
+      - ssh $REMOTE_ROOT@$SSH_IP_ADDRESS -p $SSH_PORT 'apt-get install -y curl unzip && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip -q awscliv2.zip && ./aws/install && rm -rf awscliv2.zip aws'
       - task: aws:config
 
   aws:config:
