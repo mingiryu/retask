@@ -29,7 +29,7 @@ tasks:
       Copy a file from the remote instance
       Example: scp:down -- file.txt
     cmds:
-      - scp -P $SSH_PORT -r $REMOTE_ROOT@$SSH_IP_ADDRESS:/{{.CLI_ARGS}} .
+      - scp -P $SSH_PORT -r $REMOTE_ROOT@$SSH_IP_ADDRESS:$REMOTE_HOME/{{.CLI_ARGS}} .
 
   clone:
     desc: Configure git and clone the repo
